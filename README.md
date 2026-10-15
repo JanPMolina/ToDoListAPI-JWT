@@ -39,7 +39,15 @@ npm run dev
    - `requests.http` (extensión REST Client de VS Code): el token se toma solo del request `login`.
    - **Postman**: importar [`postman/ToDoListAPI.postman_collection.json`](./postman/ToDoListAPI.postman_collection.json) (o `http://localhost:4000/api/docs/openapi.json`). El request *Login* guarda el token en la variable `token` y toda la carpeta *Tasks* lo usa.
 
+### Colección de peticiones en Postman
+
+`GET /tasks` heredando el Bearer token de la colección → `200 OK` (tests 2/2):
+
 ![Colección de Postman](./postman/coleccion-postman.png)
+
+Colección completa ejecutada con el Collection Runner: 20 requests, **25 tests, 0 errores**:
+
+![Resultados del Collection Runner](./postman/runner-resultados.png)
 
 ## Flujo de autenticación
 
