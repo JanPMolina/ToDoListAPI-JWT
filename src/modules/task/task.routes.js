@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { supabase } from "../../lib/supabase.js";
 import { validate } from "../../middlewares/validate.js";
+import { requireAuth } from "../../middlewares/auth.js";
 import { createTaskRepository } from "./task.repository.js";
 import { createTaskService } from "./task.service.js";
 import { createTaskController } from "./task.controller.js";
@@ -12,6 +13,8 @@ const taskService = createTaskService(taskRepository);
 const taskController = createTaskController(taskService);
 
 export const taskRouter = Router();
+
+taskRouter.use(requireAuth); // ← todas las rutas de tareas requieren token
 
 taskRouter.get("/", taskController.list);
 taskRouter.get("/:id", validate(taskIdParams, "params"), taskController.getById);

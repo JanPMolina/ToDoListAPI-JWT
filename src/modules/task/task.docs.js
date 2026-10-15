@@ -1,4 +1,4 @@
-import { errorResponse, idParam, jsonBody, jsonResponse, toSchema } from "../../docs/helpers.js";
+import { errorResponse, idParam, jsonBody, jsonResponse, secure, toSchema } from "../../docs/helpers.js";
 import { createTaskSchema, taskSchema, updateTaskSchema } from "./task.schema.js";
 
 const task = { $ref: "#/components/schemas/Task" };
@@ -11,7 +11,8 @@ export const taskDocs = {
         CreateTask: toSchema(createTaskSchema),
         UpdateTask: { ...toSchema(updateTaskSchema), minProperties: 1 },
     },
-    paths: {
+    // secure(): todas las rutas de tareas requieren token (igual que taskRouter.use(requireAuth)).
+    paths: secure({
         "/tasks": {
             get: {
                 tags: ["Tasks"],
@@ -61,5 +62,5 @@ export const taskDocs = {
                 },
             },
         },
-    },
+    }),
 };

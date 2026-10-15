@@ -27,3 +27,23 @@ export const idParam = {
     required: true,
     schema: { type: "integer", minimum: 1 },
 };
+
+// Marca todas las operaciones como protegidas (candado en Swagger) y les agrega la respuesta 401.
+// Es el requireAuth de la documentación.
+export function secure(paths) {
+    const result = {};
+    for (const [path, item] of Object.entries(paths)) {
+        result[path] = {};
+        for (const [key, value] of Object.entries(item)) {
+            result[path][key] =
+                key === "parameters"
+                    ? value
+                    : {
+                          ...value,
+                          security: [{ bearerAuth: [] }],
+                          responses: { ...value.responses, 401: errorResponse("Token faltante, inválido o expirado") },
+                      };
+        }
+    }
+    return result;
+}

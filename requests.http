@@ -1,50 +1,103 @@
 # Usar con la extensión "REST Client" de VS Code (o copiar como curl)
 @base = http://localhost:4000/api
+# El token se toma automáticamente de la respuesta del request "login" (ejecutarlo primero).
+@token = {{login.response.body.accessToken}}
 
-### Health
+### Health (pública)
 GET {{base}}/health
 
-### Health de la base de datos
+### Health de la base de datos (pública)
 GET {{base}}/health/db
 
 ### Ruta inexistente (404 en JSON)
 GET {{base}}/nope
 
-### Listar tareas
+
+############################  AUTH  ############################
+
+### Registrar usuario (201; la segunda vez: 409)
+POST {{base}}/auth/register
+Content-Type: application/json
+
+{ "email": "ana@test.com", "password": "supersecreta" }
+
+### Registro inválido (400)
+POST {{base}}/auth/register
+Content-Type: application/json
+
+{ "email": "no-es-un-email", "password": "123" }
+
+### Login con contraseña incorrecta (401)
+POST {{base}}/auth/login
+Content-Type: application/json
+
+{ "email": "ana@test.com", "password": "incorrecta" }
+
+### Login correcto (200 → accessToken)
+# @name login
+POST {{base}}/auth/login
+Content-Type: application/json
+
+{ "email": "ana@test.com", "password": "supersecreta" }
+
+### Usuario dueño del token (200)
+GET {{base}}/auth/me
+Authorization: Bearer {{token}}
+
+
+############################  TASKS (requieren token)  ############################
+
+### Listar tareas SIN token (401)
 GET {{base}}/tasks
+
+### Listar tareas con token alterado (401)
+GET {{base}}/tasks
+Authorization: Bearer {{token}}x
+
+### Listar tareas (200)
+GET {{base}}/tasks
+Authorization: Bearer {{token}}
 
 ### Obtener una tarea
 GET {{base}}/tasks/1
+Authorization: Bearer {{token}}
 
 ### Obtener una tarea con id inválido (400)
 GET {{base}}/tasks/abc
+Authorization: Bearer {{token}}
 
 ### Obtener una tarea que no existe (404)
 GET {{base}}/tasks/999999
+Authorization: Bearer {{token}}
 
 ### Crear tarea (201)
 POST {{base}}/tasks
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 { "title": "Preparar la demo", "description": "Ensayar cada paso" }
 
 ### Crear tarea inválida (400)
 POST {{base}}/tasks
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 { "title": "" }
 
 ### Marcar como hecha (200)
 PATCH {{base}}/tasks/1
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 { "done": true }
 
 ### Actualizar sin campos (400)
 PATCH {{base}}/tasks/1
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {}
 
 ### Eliminar (204; la segunda vez: 404)
 DELETE {{base}}/tasks/1
+Authorization: Bearer {{token}}
