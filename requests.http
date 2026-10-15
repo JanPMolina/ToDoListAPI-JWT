@@ -7,13 +7,22 @@ GET {{base}}/health
 ### Health de la base de datos
 GET {{base}}/health/db
 
+### Ruta inexistente (404 en JSON)
+GET {{base}}/nope
+
 ### Listar tareas
 GET {{base}}/tasks
 
 ### Obtener una tarea
 GET {{base}}/tasks/1
 
-### Crear tarea
+### Obtener una tarea con id inválido (400)
+GET {{base}}/tasks/abc
+
+### Obtener una tarea que no existe (404)
+GET {{base}}/tasks/999999
+
+### Crear tarea (201)
 POST {{base}}/tasks
 Content-Type: application/json
 
@@ -25,11 +34,17 @@ Content-Type: application/json
 
 { "title": "" }
 
-### Marcar como hecha
+### Marcar como hecha (200)
 PATCH {{base}}/tasks/1
 Content-Type: application/json
 
 { "done": true }
 
-### Eliminar
+### Actualizar sin campos (400)
+PATCH {{base}}/tasks/1
+Content-Type: application/json
+
+{}
+
+### Eliminar (204; la segunda vez: 404)
 DELETE {{base}}/tasks/1
